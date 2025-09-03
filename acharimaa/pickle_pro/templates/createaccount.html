@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% block main-content %}
+{% load static %}
+
+<div class="container p-4 bg-white shadow rounded mt-5 mb-5" style="max-width: 350px;">
+    <h2 class="text-center mb-3">Sign Up</h2>
+    <form method="post" action="{% url 'createaccount' %}" onsubmit="return validateForm()">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label class="form-label">Fullname:</label>
+            <input type="text" id="full_name" class="form-control" name="full_name" placeholder="Choose a fullname" required>
+        </div>
+    
+        <div class="mb-3">
+            <label class="form-label">Email:</label>
+            <input type="email" id="email" class="form-control" name="email" placeholder="Enter your email" required>
+        </div>
+    
+        <div class="mb-3">
+            <label class="form-label">Mobile Number:</label>
+            <input type="text" id="mobile" class="form-control" name="phone_number" placeholder="Enter your mobile number" required>
+            <small id="error-msg" style="color: red; display: none;">Mobile number must be exactly 10 digits.</small>
+        </div>
+        <div id="signup-error" class="text-danger text-center mb-3"></div>
+    
+        <div class="mb-3">
+            <label class="form-label">Password:</label>
+            <input type="password" id="password" class="form-control" name="password" placeholder="Enter password" required>
+        </div>
+    
+        <button type="submit" class="btn account w-100">Sign Up</button>
+
+        {% comment %} {% if signup_success %}
+        <script>
+            alert("Sign-up successful! Please log in.");
+            window.location.href = "{% url 'login' %}";
+        </script>
+        {% endif %} {% endcomment %}
+
+        {% if signup_success %}
+        <script>
+            alert("Sign-up successful! Please log in.");
+            window.location.href = "{% url 'login' %}";
+        </script>
+        {% elif account_exists %}
+        <script>
+            alert("An account with this email already exists. Please log in.");
+            window.location.href = "{% url 'login' %}";
+        </script>
+        {% endif %}
+
+        <div class="text-center mt-3">
+            <a href="{% url 'login' %}" class="d-block">Login</a>
+        </div>
+    </form>
+</div>
+
+
+<script>
+    function validateForm() {
+        const mobile = document.getElementById("mobile").value.trim();
+        const errorMsg = document.getElementById("error-msg");
+    
+        if (!/^\d{10}$/.test(mobile)) {
+          errorMsg.style.display = "block";
+          return false; // Prevent form submission
+        } else {
+          errorMsg.style.display = "none";
+          return true; // Allow form submission
+        }
+      }
+
+    function handleSignup(event) {
+        event.preventDefault(); // Prevent default form submission
+    
+        // Get the mobile number input value
+        var mobile = document.getElementById("mobile").value;
+    
+        // Regex to validate a 10-digit mobile number
+        var mobileRegex = /^[0-9]{10}$/;
+    
+        // Check if the mobile number is valid
+        if (!mobileRegex.test(mobile)) {
+            // Display an error message
+            document.getElementById("signup-error").innerText = "Invalid mobile number! Please enter a valid 10-digit number.";
+            return false; // Stop further execution
+        } else {
+            // Clear any previous error message
+            document.getElementById("signup-error").innerText = "";
+    
+
+    
+            // Optionally, reset the form after successful submission
+            document.querySelector("form").reset();
+        }
+    }
+    </script>
+    
+{% endblock main-content %}

@@ -1,0 +1,59 @@
+{% extends 'base.html'%}
+{% block main-content%}
+{% load static %} 
+
+<!------------ Our Product Start ------------>
+<div class="p-4">
+    <div class="container-fluid my-5">
+      <div class="row justify-content-center">
+        <div class="col-12 text-center">
+            <div class="heading">
+                <h1>PANJABI PICKLES</h1>
+                <div class="head-sub">
+                    <h1>PANJABI PICKLES</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-4">
+        {% for i in panjabi_products %}
+            {% if i.id %}
+            <div class="col-12 col-md-6 col-lg-4 hvr-float"> 
+                <form method="post" action="{% url 'add_to_cart' 'panjabi' i.id %}">
+                    {% csrf_token %}
+                    <div class="card p-2 text-center">
+                        <img src="{{ i.image.url }}" class="w-100 wid i-image">
+                        <div class="mt-3">
+                            <h4 class="i-name">{{ i.name }}</h4>
+                            <h4>| {{ i.description }}</h4>
+                            
+                         <div class="d-flex align-items-center gap-1 mt-2">
+                            <select name="size" class="form-select box w-75" required>
+                                <option value="" disabled selected>Select Size</option>
+                                <option value="250g">250g - Rs {{ i.price_250g }}</option>
+                                <option value="500g">500g - Rs {{ i.price_500g }}</option>
+                                <option value="1kg">1Kg - Rs {{ i.price_1kg }}</option>
+                            </select>
+                            
+                            <button type="submit" class="add-to-cart hvr-glow cart cart-btn w-50">
+                                Add to Cart
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        {% empty %}
+            <p class="text-center mt-5 mb-5 container-1">
+                <strong class="text-danger">No Panjabi </strong> 
+                <strong>products available. &#128532;</strong>
+            </p>
+        {% endfor %}
+    </div>
+    </div>
+  </div>
+  <!------------ Our Product End ------------>
+
+
+  {% endblock main-content%}

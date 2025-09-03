@@ -1,0 +1,105 @@
+{% extends 'base.html'%}
+{% block main-content%}
+{% load static %} 
+
+
+
+ 
+      <div class="container  my-5"> 
+        <div class="row">  
+            <div class="col-12 text-center mt-3">
+              <div class="heading">
+                  <h1>Contact Us</h1>
+                  <div class="head-sub">
+                      <h1>Contact Us</h1>
+                  </div>
+              </div>
+            </div>
+          </div>
+        <div class="row contt contact">
+            <!-- Contact Form -->
+            <div class="col-md-7 cont ">  
+                <form method="POST" action="{% url 'contact' %}" id="contactForm">
+
+                    {% csrf_token %}
+                    <div class="control-group">
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Your Name"
+                            required="required" data-validation-required-message="Please enter your name" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                    <div class="control-group">
+                        <input type="email" class="form-control" id="email" name="email" placeholder="Your Email"
+                            required="required" data-validation-required-message="Please enter your email" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                    <div class="control-group">
+                        <input type="text" class="form-control" id="subject" name='subject'  placeholder="Subject"
+                            required="required" data-validation-required-message="Please enter a subject" />
+                        <p class="help-block text-danger"></p>
+                    </div>
+                    <div class="control-group">
+                        <textarea class="form-control" rows="6" id="message" name = 'message' placeholder="Message"
+                            required="required"
+                            data-validation-required-message="Please enter your message"></textarea>
+                        <p class="help-block text-danger"></p>
+                    </div>
+                    <div>
+                        <button class="btn send" type="submit" id="sendMessageButton">
+                            Send Message
+                        </button>
+                    </div>
+                </form>                 
+                {% for message in messages %}
+                    {% comment %} <p>{{ message }}</p> {% endcomment %}
+                {% endfor %}
+            </div>
+
+            <!-- Contact Info & Map -->
+            <div class="col-md-5 mt-3">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d470027.2875200896!2d72.25005607057591!3d23.020534158517542!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x395e848aba5bd449%3A0x4fcedd11614f6516!2sAhmedabad%2C%20Gujarat!5e0!3m2!1sen!2sin!4v1744865720608!5m2!1sen!2sin"  class="w-100 mt-3" height="200" style="border:0;" allowfullscreen></iframe>
+                <div class="info mt-3 p-1 mb-3 checkout  rounded">
+                    <p class="padd">📍 23 Street,Ahmdabad, India</p>
+                    <p class="padd"> <span class="me-2">✉</span>  aacharima@gmail.com</p>
+                    <p class="mb-3 padd"> 📞 +91 93169 19201</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="text/javascript">
+            
+    document.getElementById("contactForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        let name = document.getElementById("name").value;
+        let email = document.getElementById("email").value;
+        let subject = document.getElementById("subject").value;
+        let message = document.getElementById("message").value;
+
+        if (name && email && subject && message) {
+            alert("Thank you! Your message has been sent.");
+            this.reset();
+        } else {
+            alert("Please fill in all fields.");
+        }
+
+    });
+
+    document.getElementById('contactForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        fetch('/contact/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(new FormData(this))
+        }).then(res => {
+            if (res.ok) alert("Message sent successfully!");
+        });
+    });
+    
+    </script>
+ 
+
+{% endblock main-content%}

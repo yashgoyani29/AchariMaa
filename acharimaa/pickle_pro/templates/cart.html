@@ -1,0 +1,140 @@
+{% extends 'base.html'%}
+{% block main-content%}
+{% load static %} 
+
+<div class="container my-5">
+    <div class="heading">
+        <div class="col-12 text-center">
+            <div class="heading">
+                <h1>Shopping Cart</h1>
+                <div class="head-sub">
+                    <h1>Shopping Cart</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% if cart_items %}
+  
+    <div class="table-responsive mt-4">
+        <table class="table table-hover text-center align-middle mb-0">
+            <thead class="table">
+                <tr class="ta">
+                    <th scope="col" class="ta">Image</th>
+                    <th scope="col" class="ta">Product</th>
+                    <th scope="col" class="ta">Weight</th>
+                    <th scope="col" class="ta">Price</th>
+                    <th scope="col" class="ta">Quantity</th>
+                    <th scope="col" class="ta">Total</th>
+                    <th scope="col" class="ta">Remove</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_items %}
+                <tr>
+                    <td class="taa">
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" class="img-fluid rounded" style="width: 50px; height: auto;">
+                    </td>
+                    <td class="taa">
+                        <strong>{{ item.product.name }}</strong><br>
+                        <small>{{ item.product.description }}</small>
+                    </td>
+                    <td class="taa">{{ item.size }}</td>
+                    <td class="taa">₹{{ item.price }}</td>
+                    <td class="taa cen">
+                        <div class="input-group justify-content-center">
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="changeQty({{ item.id }}, -1)">−</button>
+                            <input type="text" id="qty-{{ item.id }}" class="form-control text-center taa" value="{{ item.quantity }}" readonly>
+                            <button class="btn btn-outline-secondary btn-sm" type="button" onclick="changeQty({{ item.id }}, 1)">+</button>
+                        </div>
+                    </td>
+                    
+                    <td class="taa">₹{{ item.total_price }}</td>
+                    <td class="taa">
+                        <a href="{% url 'remove_from_cart' item.id %}" class="btn btn-sm btn-danger">
+                            Remove
+                        </a>
+                    </td>
+                </tr>
+                
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+
+    <!-- Total Amount -->
+    <div class="d-flex justify-content-end mt-4 pt-1 tot">
+        <h4 class="p-2">Total :</h4>
+        <h4 class="p-2" style="color: darkgreen;">
+            ₹ {{ total_price }}
+        </h4>
+    </div>
+
+    <!-- Proceed to Checkout Button -->
+    <div class="text-center mt-4">
+        <a href="{% url 'checkout' %}" class="btn checkout btn-lg">Proceed to Checkout</a>
+    </div>
+
+    {% else %}
+    <div class="alert alert-warning text-center" role="alert">
+        Your cart is currently empty.
+    </div>
+    {% endif %}
+</div>
+  <script>
+    function loadCart() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const list = document.getElementById('cart-items');
+        cart.forEach(item => {
+            const li = document.createElement('li');
+            li.textContent = `${item.name} (Qty: ${item.quantity})`;
+            list.appendChild(li);
+        });
+    }
+
+        function changeQty(itemId, delta) {
+            const input = document.getElementById(`qty-${itemId}`);
+            let quantity = parseInt(input.value);
+    
+            if (isNaN(quantity)) quantity = 1;
+            const newQty = quantity + delta;
+            if (newQty < 1) return;
+    
+            input.value = newQty;
+    
+            // Send AJAX request to update in backend
+            fetch(`/update-quantity/${itemId}/${newQty}/`, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+            .then(response => {
+                if (response.ok) {
+                    location.reload(); // or update total column dynamically if preferred
+                }
+            });
+        }
+    
+        function changeQty(itemId, delta) {
+            const input = document.getElementById(`qty-${itemId}`);
+            let quantity = parseInt(input.value);
+            if (isNaN(quantity)) quantity = 1;
+            const newQty = quantity + delta;
+            if (newQty < 1) return;
+            input.value = newQty;
+    
+            // Optional: AJAX request to backend to update quantity
+            fetch(`/update-quantity/${itemId}/${newQty}/`, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            }).then(response => {
+                if (response.ok) {
+                    location.reload(); // or update total directly
+                }
+            });
+        }
+    </script> 
+    
+   
+
+{% endblock main-content%}
